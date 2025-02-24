@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互联网展示柜</title>
+    <style>
+        /* 全局样式，去除默认的内外边距 */
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        /* 容器样式，使用相对定位 */
+        .container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 标题样式，设置字体大小、颜色和居中显示 */
+        .title {
+            font-size: 36px;
+            color: #333;
+            text-align: center;
+            z-index: 1;
+        }
+
+        /* 方框样式，设置边框、背景颜色、宽度、高度和居中显示 */
+        .box {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 第一个方框的位置，位于标题的上方 */
+        .box:nth-child(2) {
+            top: 0;
+        }
+
+        /* 第二个方框的位置，位于标题的右侧 */
+        .box:nth-child(3) {
+            right: 0;
+        }
+
+        /* 第三个方框的位置，位于标题的下方 */
+        .box:nth-child(4) {
+            bottom: 0;
+        }
+
+        /* 第四个方框的位置，位于标题的左侧 */
+        .box:nth-child(5) {
+            left: 0;
+        }
+
+        /* 仅供展示文本的样式，设置位置、字体大小和颜色 */
+        .note {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <!-- 标题 -->
+        <h1 class="title">互联网展示柜</h1>
+        <!-- 第一个方框 -->
+        <div class="box">
+            <a href="https://www.example1.com">示例链接1</a>
+        </div>
+        <!-- 第二个方框 -->
+        <div class="box">
+            <a href="https://www.example2.com">示例链接2</a>
+        </div>
+        <!-- 第三个方框 -->
+        <div class="box">
+            <a href="https://www.example3.com">示例链接3</a>
+        </div>
+        <!-- 第四个方框 -->
+        <div class="box">
+            <a href="https://www.example4.com">示例链接4</a>
+        </div>
+        <!-- 仅供展示文本 -->
+        <div class="note">仅供展示</div>
+    </div>
+</body>
+
+</html>
