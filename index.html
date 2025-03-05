@@ -1,26 +1,123 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>中科大管理学院讲座查询</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USTC讲座查询</title>
     <style>
-        .container { max-width: 800px; margin: 50px auto; padding: 20px; }
-        .query-box { background: #f5f5f5; padding: 20px; border-radius: 8px; }
-        input[type="date"] { padding: 8px; margin: 10px; }
-        button { background: #0066cc; color: white; padding: 10px 20px; border: none; border-radius: 4px; }
+        /* 保持与之前相同的CSS样式 */
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Segoe UI", system-ui; }
+        .container { max-width: 800px; margin: 2rem auto; padding: 1.5rem; }
+        /* 其他样式保持不变... */
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>中国科学技术大学管理学院讲座查询</h1>
+        <h1>中国科大管理学院讲座查询</h1>
+        
         <div class="query-box">
-            <form method="POST">
-                <label>起始时间：</label>
-                <input type="date" name="start" required>
-                <label>结束时间：</label>
-                <input type="date" name="end" required>
-                <button type="submit">查询</button>
-            </form>
+            <div class="date-group">
+                <input type="date" id="startDate" required>
+                <input type="date" id="endDate" required>
+            </div>
+            <button onclick="fetchLectures()">查询讲座</button>
         </div>
+
+        <div id="results"></div>
     </div>
+
+    <script>
+        // 使用CORS代理绕过跨域限制
+        const CORS_PROXY = "https://cors-anywhere.herokuapp.com/"
+
+        async function fetchLectures() {
+            const start = document.getElementById('startDate').value;
+            const end = document.getElementById('endDate').value;
+            const resultsDiv = document.getElementById('results');
+            
+            resultsDiv.innerHTML = '<div class="loading">正在获取最新讲座信息...</div>';
+
+            try {
+                // 获取原始网页内容
+                const response = await fetch(CORS_PROXY + 'https://som.ustc.edu.cn/hyjz/list.htm');
+                const html = await response.text();
+                
+                // 解析讲座信息
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const items = doc.querySelectorAll('.list_item');
+                
+                const lectures = [];
+                items.forEach(item => {
+                    try {
+                        const titleElem = item.querySelector('.Article_Title a');
+                        const timeElem = item.querySelector('.Article_PublishDate');
+                        
+                        const title = titleElem.textContent.trim();
+                        const timeStr = timeElem.textContent.trim();
+                        const link = titleElem.href.startsWith('http') ? 
+                            titleElem.href : 
+                            `https://som.ustc.edu.cn${titleElem.href}`;
+                        
+                        // 转换时间格式（示例：2023年08月25日 → 2023-08-25）
+                        const formattedTime = timeStr
+                            .replace(/年/g, '-')
+                            .replace(/月/g, '-')
+                            .replace(/日/g, '');
+                        const lectureTime = new Date(formattedTime);
+
+                        lectures.push({
+                            title,
+                            time: lectureTime,
+                            link
+                        });
+                    } catch(e) { console.error(e) }
+                });
+
+                // 过滤时间段
+                const filtered = lectures.filter(lecture => {
+                    const lectureDate = lecture.time;
+                    const startDate = new Date(start);
+                    const endDate = new Date(end);
+                    return lectureDate >= startDate && lectureDate <= endDate;
+                });
+
+                renderResults(filtered);
+                
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="error">
+                        ⚠️ 加载失败：${error.message}<br>
+                        （若频繁出现请稍后重试）
+                    </div>
+                `;
+            }
+        }
+
+        function renderResults(lectures) {
+            const resultsDiv = document.getElementById('results');
+            
+            if (!lectures.length) {
+                resultsDiv.innerHTML = '<div class="no-result">该时间段内没有讲座安排</div>';
+                return;
+            }
+
+            const html = lectures.map(lecture => `
+                <div class="lecture-item">
+                    <div class="lecture-time">
+                        ${lecture.time.toLocaleDateString('zh-CN')}
+                    </div>
+                    <a href="${lecture.link}" 
+                       class="lecture-title"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        ${lecture.title}
+                    </a>
+                </div>
+            `).join('');
+
+            resultsDiv.innerHTML = html;
+        }
+    </script>
 </body>
 </html>
