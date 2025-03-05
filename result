@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>查询结果</title>
+    <style>
+        .lecture-item { border-bottom: 1px solid #eee; padding: 15px; }
+        .lecture-time { color: #666; font-size: 0.9em; }
+        a { color: #0066cc; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>查询结果（{{ lectures|length }}条）</h2>
+        {% if lectures %}
+            {% for lecture in lectures %}
+                <div class="lecture-item">
+                    <div class="lecture-time">
+                        {{ lecture.time.strftime('%Y-%m-%d') }}
+                    </div>
+                    <a href="{{ lecture.link }}" target="_blank">
+                        {{ lecture.title }}
+                    </a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>该时间段内没有找到相关讲座</p>
+        {% endif %}
+        <a href="/">返回查询</a>
+    </div>
+</body>
+</html>
